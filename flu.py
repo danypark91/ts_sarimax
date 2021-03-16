@@ -40,6 +40,16 @@ table1 = pd.pivot_table(tot_infflu, values="Number_Positive", index=["weekending
 table1
 
 # Total sum by the date
-inf_groupby=tot_infflu.groupby(["weekending"])["Number_Positive"].sum()
+inf_groupby=tot_infflu.groupby(["weekending"])["Number_Positive", "Specimens Tested"].sum()
 df_inf = pd.DataFrame(inf_groupby)
+df_inf["Positive_Rate"] = df_inf["Number_Positive"]/df_inf["Specimens_Tested"]
+df_inf.head(5)
 
+# Frequency of the Test and Positive Cases
+df_inf.plot(figsize=(18,10),
+            title="Weekly Flu case reported",
+            xlabel="Date",
+            ylabel="Frequency")
+df_inf["Specimens_Tested"].plot()
+
+plt.legend()
