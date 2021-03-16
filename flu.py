@@ -53,3 +53,9 @@ df_inf.plot(figsize=(18,10),
 df_inf["Specimens_Tested"].plot()
 
 plt.legend()
+
+# Positive Rate of the flu cases
+df_inf['Positive_Rate'].plot(figsize=(18,10),
+                               title="Weekly Flu case reported",
+                               xlabel="Date",
+                               ylabel="Rate")
