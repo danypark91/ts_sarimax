@@ -56,7 +56,6 @@ df_inf.plot(figsize=(18,10),
             xlabel="Date",
             ylabel="Frequency")
 df_inf["Specimens_Tested"].plot()
-
 plt.legend()
 
 # Positive Rate of the flu cases
@@ -64,6 +63,15 @@ df_inf['Positive_Rate'].plot(figsize=(18,10),
                                title="Weekly Flu case reported",
                                xlabel="Date",
                                ylabel="Rate")
+
+# Yearly Average plot
+df_yearly = df_inf.resample("1Y").mean()
+
+df_yearly["Number_Positive"].plot(figsize=(18,10),
+                                 title="Yearly Average of Flu Cases",
+                                 ylabel="Frequency")
+df_yearly["Specimens_Tested"].plot()
+plt.legend()
 
 # Decomposing the Positive cases
 import statsmodels.api as sm
