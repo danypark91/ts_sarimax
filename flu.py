@@ -73,6 +73,16 @@ df_yearly["Number_Positive"].plot(figsize=(18,10),
 df_yearly["Specimens_Tested"].plot()
 plt.legend()
 
+# Monthly Average plot
+df_monthly = df_inf.resample("M").mean()
+
+df_monthly["Number_Positive"].plot(figsize=(18,10),
+                                 title="Monthly Average of Flu Cases",
+                                 ylabel="Frequency")
+df_monthly["Specimens_Tested"].plot()
+
+plt.legend()
+
 # Decomposing the Positive cases
 import statsmodels.api as sm
 from statsmodels.tsa.seasonal import seasonal_decompose
