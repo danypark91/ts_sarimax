@@ -45,6 +45,11 @@ df_inf = pd.DataFrame(inf_groupby)
 df_inf["Positive_Rate"] = df_inf["Number_Positive"]/df_inf["Specimens_Tested"]
 df_inf.head(5)
 
+# Reset the index to DatetimeIndex for convenience
+format ='%Y-%m-%d'
+df_inf.index = pd.to_datetime(df_inf.index, format=format)
+df_inf = df_inf.set_index(pd.DatetimeIndex(df_inf.index))
+
 # Frequency of the Test and Positive Cases
 df_inf.plot(figsize=(18,10),
             title="Weekly Flu case reported",
@@ -59,3 +64,15 @@ df_inf['Positive_Rate'].plot(figsize=(18,10),
                                title="Weekly Flu case reported",
                                xlabel="Date",
                                ylabel="Rate")
+
+# Decomposing the Positive cases
+import statsmodels.api as sm
+from statsmodels.tsa.seasonal import seasonal_decompose
+
+from pylab import rcParams
+rcParams['figure.figsize'] = 18, 10
+
+df_inf_pos = df_inf["Number_Positive"]
+
+decomp = seasonal_decompose(df_inf_pos,period=7)
+decomp.plot();
