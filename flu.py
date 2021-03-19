@@ -128,3 +128,17 @@ def adfuller_result(y):
 # Augmented Dicky-Fuller Test
 adfuller_result(df_inf_pos)
 
+# Converting into the dataframe
+df_inf_pos = df_inf_pos.rename_axis('weekending').to_frame('Number_Positive')
+df_inf_pos.head(5)
+
+# Best-fit of the model
+import pmdarima as pm
+model = pm.auto_arima(df_inf_pos, d=1, D=1,
+                      seasonal=True, m=7,
+                      start_p=0, max_p=5,
+                      start_q=0, max_q=5,
+                      trace=True,
+                      error_action='ignore',
+                      supress_warning=True,
+                      stepwise=True)
