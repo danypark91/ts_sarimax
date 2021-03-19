@@ -92,5 +92,39 @@ rcParams['figure.figsize'] = 18, 10
 
 df_inf_pos = df_inf["Number_Positive"]
 
-decomp = seasonal_decompose(df_inf_pos,period=7)
+decomp = seasonal_decompose(df_inf_pos, model='additive')
 decomp.plot();
+
+# Differencing: Stationarity
+df_inf_pos_diff = df_inf_pos.diff()
+
+fig, ax1 = plt.subplots(figsize=(18,8))
+fig, ax2 = plt.subplots(figsize=(18,8))
+fig, ax3 = plt.subplots(figsize=(18,8))
+
+df_inf_pos_diff.plot(ax=ax1, title="First Order Differencing");
+plot_acf(df_inf_pos_diff.dropna(), ax=ax2);
+plot_pacf(df_inf_pos_diff.dropna(), ax=ax3);
+
+
+# Augmented Dicky-Fuller Test: Stationarity
+from statsmodels.tsa.stattools import adfuller
+
+def adfuller_result(y):
+    # Dicky-Fuller test
+    # If the Time Series is differenced prior,
+    # drop the first cell of the series
+    results = adfuller(y)
+
+    # Parse the test and print the result
+    print('ADF Statistics: %f' % results[0])
+    print('p-value: %f' % results[1])
+    print('Lags Used: %f' % results[2])
+    print('Observations Used: %f' % results[3])
+    print('Critical Values:')
+    for key, value in results[4].items():
+        print('\t%s: %.3f' % (key, value))
+
+# Augmented Dicky-Fuller Test
+adfuller_result(df_inf_pos)
+
