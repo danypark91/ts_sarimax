@@ -135,6 +135,10 @@ df_inf_pos.head(5)
 from sklearn.model_selection import train_test_split
 train_inf, test_inf = train_test_split(df_monthly_pos, test_size=0.2, shuffle=False)
 
+# Visual representation of the split
+plt.plot(train_inf)
+plt.plot(test_inf)
+
 # Best-fit of the model
 import pmdarima as pm
 model = pm.auto_arima(train_inf, d=1, D=1,
@@ -145,9 +149,22 @@ model = pm.auto_arima(train_inf, d=1, D=1,
                       error_action='ignore',
                       supress_warning=True,
                       stepwise=True)
-model.summary()
 
-# Visual representation of the split
-plt.plot(train_inf)
-plt.plot(test_inf)
+# Fit on train model
+from statsmodels.tsa.statespace.sarimax import SARIMAX
 
+model = SARIMAX(train_inf,
+                order=(0,1,0),
+                seasonal_order=(0,1,1,12),
+               enforce_stationarity = False,
+               enforce_invertibility = False)
+result = model.fit()
+result.summary()
+
+# Plotting the dignostics of the train set
+result.plot_diagnostics(figsize=(18,10))
+plt.show()
+
+# Fitting test-set with the model
+inf_future = result.get_prediction(start=test_inf.index[0], dynamic=False)
+inf_future_int = inf_future.conf_int()
