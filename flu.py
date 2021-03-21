@@ -90,22 +90,21 @@ from statsmodels.tsa.seasonal import seasonal_decompose
 from pylab import rcParams
 rcParams['figure.figsize'] = 18, 10
 
-df_inf_pos = df_inf["Number_Positive"]
+df_monthly_pos = df_monthly["Number_Positive"]
 
-decomp = seasonal_decompose(df_inf_pos, model='additive')
+decomp = seasonal_decompose(df_monthly_pos, model='additive')
 decomp.plot();
 
-# Differencing: Stationarity
-df_inf_pos_diff = df_inf_pos.diff()
+# First Differencing: Stationarity
+df_monthly_pos_diff = df_monthly_pos.diff()
 
 fig, ax1 = plt.subplots(figsize=(18,8))
 fig, ax2 = plt.subplots(figsize=(18,8))
 fig, ax3 = plt.subplots(figsize=(18,8))
 
-df_inf_pos_diff.plot(ax=ax1, title="First Order Differencing");
-plot_acf(df_inf_pos_diff.dropna(), ax=ax2);
-plot_pacf(df_inf_pos_diff.dropna(), ax=ax3);
-
+df_monthly_pos_diff.plot(ax=ax1, title="First Order Differencing");
+plot_acf(df_monthly_pos_diff.dropna(), ax=ax2);
+plot_pacf(df_monthly_pos_diff.dropna(), ax=ax3);
 
 # Augmented Dicky-Fuller Test: Stationarity
 from statsmodels.tsa.stattools import adfuller
@@ -126,15 +125,15 @@ def adfuller_result(y):
         print('\t%s: %.3f' % (key, value))
 
 # Augmented Dicky-Fuller Test
-adfuller_result(df_inf_pos)
+adfuller_result(df_monthly_pos)
 
 # Converting into the dataframe
-df_inf_pos = df_inf_pos.rename_axis('weekending').to_frame('Number_Positive')
+df_inf_pos = df_monthly_pos.rename_axis('weekending').to_frame('Number_Positive')
 df_inf_pos.head(5)
 
 # Best-fit of the model
 import pmdarima as pm
-model = pm.auto_arima(df_inf_pos, d=1, D=1,
+model = pm.auto_arima(df_monthly_pos, d=1, D=1,
                       seasonal=True, m=7,
                       start_p=0, max_p=5,
                       start_q=0, max_q=5,
