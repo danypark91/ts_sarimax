@@ -131,9 +131,13 @@ adfuller_result(df_monthly_pos)
 df_inf_pos = df_monthly_pos.rename_axis('weekending').to_frame('Number_Positive')
 df_inf_pos.head(5)
 
+# Split test and train
+from sklearn.model_selection import train_test_split
+train_inf, test_inf = train_test_split(df_monthly_pos, test_size=0.2, shuffle=False)
+
 # Best-fit of the model
 import pmdarima as pm
-model = pm.auto_arima(df_monthly_pos, d=1, D=1,
+model = pm.auto_arima(train_inf, d=1, D=1,
                       seasonal=True, m=7,
                       start_p=0, max_p=5,
                       start_q=0, max_q=5,
@@ -141,3 +145,9 @@ model = pm.auto_arima(df_monthly_pos, d=1, D=1,
                       error_action='ignore',
                       supress_warning=True,
                       stepwise=True)
+model.summary()
+
+# Visual representation of the split
+plt.plot(train_inf)
+plt.plot(test_inf)
+
