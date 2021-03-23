@@ -233,3 +233,31 @@ model = pm.auto_arima(df_monthly_pos2, d=1, D=1,
                       supress_warning=True,
                       stepwise=True)
 
+# Fit model
+model = SARIMAX(train_inf2, 
+                order=(0,1,3), 
+                seasonal_order=(0,1,1,12),
+               enforce_stationarity = False,
+               enforce_invertibility = False)
+result2 = model.fit()
+result2.summary()
+
+# Plotting the dignostics of the train set
+result2.plot_diagnostics(figsize=(18,10))
+plt.show()
+
+# Fitting test-set with the model
+inf_future2 = result2.get_prediction(start=test_inf2.index[0], end=test_inf2.index[21], dynamic=False)
+inf_future_int2 = inf_future2.conf_int()
+
+#Plotting observed values and predictions
+plt.figure(figsize=(18,10))
+
+ax = df_monthly_pos2.plot(label = "Number_Positive")
+inf_future2.predicted_mean.plot(ax=ax, label="Prediction", color = 'Red')
+ax.fill_between(inf_future_int2.index,
+                inf_future_int2.iloc[:, 1],
+                color='grey', alpha=0.3, label = "Confidence Interval")
+
+plt.ylabel("Number_Positive")
+plt.legend()
