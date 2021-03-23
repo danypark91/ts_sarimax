@@ -195,3 +195,41 @@ df_monthly_pos2 = df_monthly["Positive_Rate"]
 
 decomp = seasonal_decompose(df_monthly_pos2,model='additive')
 decomp.plot();
+
+# ACF and PACF - Positive Rate
+fig, ax1 = plt.subplots(figsize=(18,8))
+fig, ax2 = plt.subplots(figsize=(18,8))
+
+plot_acf(df_monthly_pos, lags=50, ax=ax1);
+plot_pacf(df_monthly_pos, lags=50, ax=ax2);
+
+# Difference the positive rate to optain stationaritiy
+df_monthly_pos_diff2 = df_monthly_pos2.diff()
+
+fig, ax1 = plt.subplots(figsize=(18,8))
+fig, ax2 = plt.subplots(figsize=(18,8))
+
+plot_acf(df_monthly_pos_diff2.dropna(), ax=ax1);
+plot_pacf(df_monthly_pos_diff2.dropna(), ax=ax2);
+
+# Augmented Dickey-Fuller Test
+adfuller_result(df_monthly_pos_diff2.dropna())
+
+# Converting into the dataframe
+df_monthly_pos2 = df_monthly_pos2.rename_axis('weekending').to_frame('Positive_Rate')
+df_monthly_pos2.head(5)
+
+train_inf2, test_inf2 = train_test_split(df_monthly_pos2, test_size=0.2, shuffle=False)
+
+# Best-fit of the model
+model = pm.auto_arima(df_monthly_pos2, d=1, D=1,
+                      seasonal=True, m=12,
+                      start_P=0, max_P=5,
+                      start_Q=0, max_Q=5,
+                      start_p=0, max_p=5,
+                      start_q=0, max_q=5,
+                      trace=True, 
+                      error_action='ignore',
+                      supress_warning=True,
+                      stepwise=True)
+
