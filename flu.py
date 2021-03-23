@@ -58,12 +58,6 @@ df_inf.plot(figsize=(18,10),
 df_inf["Specimens_Tested"].plot()
 plt.legend()
 
-# Positive Rate of the flu cases
-df_inf['Positive_Rate'].plot(figsize=(18,10),
-                               title="Weekly Flu case reported",
-                               xlabel="Date",
-                               ylabel="Rate")
-
 # Yearly Average plot
 df_yearly = df_inf.resample("1Y").mean()
 
@@ -168,3 +162,36 @@ plt.show()
 # Fitting test-set with the model
 inf_future = result.get_prediction(start=test_inf.index[0], dynamic=False)
 inf_future_int = inf_future.conf_int()
+
+# Plotting observed values and predictions
+plt.figure(figsize=(18,10))
+
+ax = df_monthly_pos.plot(label = "Number_Positive")
+inf_future.predicted_mean.plot(ax=ax, label="Prediction", color = 'Red')
+ax.fill_between(inf_future_int.index,
+                inf_future_int.iloc[:, 1],
+                color='grey', alpha=0.3, label = "Confidence Interval")
+
+plt.ylabel("Number_Positive")
+plt.legend()
+
+# Positive Rate of the flu cases
+df_inf['Positive_Rate'].plot(figsize=(18,10),
+                               title="Weekly Flu case reported",
+                               xlabel="Date",
+                               ylabel="Rate")
+
+# Positive rate of monthly resampled
+df_monthly["Positive_Rate"].plot(figsize=(18,10),
+                                 title="Monthly Positive Rate of Flu Cases",
+                                 ylabel="Rate (%)")
+plt.legend()
+
+# Decomposing Positive Rate
+from pylab import rcParams
+rcParams['figure.figsize'] = 18, 10
+
+df_monthly_pos2 = df_monthly["Positive_Rate"]
+
+decomp = seasonal_decompose(df_monthly_pos2,model='additive')
+decomp.plot();
