@@ -253,11 +253,40 @@ inf_future_int2 = inf_future2.conf_int()
 #Plotting observed values and predictions
 plt.figure(figsize=(18,10))
 
-ax = df_monthly_pos2.plot(label = "Number_Positive")
+ax = df_monthly_pos2.plot(label = "Positive_Rate")
 inf_future2.predicted_mean.plot(ax=ax, label="Prediction", color = 'Red')
 ax.fill_between(inf_future_int2.index,
                 inf_future_int2.iloc[:, 1],
                 color='grey', alpha=0.3, label = "Confidence Interval")
 
-plt.ylabel("Number_Positive")
+plt.ylabel("Positive_Rate")
 plt.legend()
+
+# MSE 
+predicted = inf_future2.predicted_mean.to_frame("Positive_Rate")
+actual = df_monthly_pos2[test_inf2.index[0]:]
+mse = ((predicted - test_inf2) ** 2).mean()
+print('The Mean Squared Error for {}'.format(round(mse, 4)))
+print('The Root Mean Squared Error for {}'.format(round(np.sqrt(mse), 4)))
+
+model2 = SARIMAX(df_monthly_pos2, 
+                order=(0,1,3), 
+                seasonal_order=(0,1,1,12),
+                enforce_stationarity = False,
+                enforce_invertibility = False)
+result3 = model2.fit()
+
+# Forecasting Confirmed Cases
+future_value = result3.get_forecast(steps=24)
+future_value_int = future_value.conf_int()
+
+#Plotting Observed vs Forecast
+ax = df_monthly_pos2.plot(label="Positive_Rate")
+future_value.predicted_mean.plot(ax=ax, label = "Forecast next 24 months", color ="Red")
+ax.fill_between(future_value_int.index,
+                future_value_int.iloc[:, 0],
+                future_value_int.iloc[:, 1], color='grey', alpha=.3, label="Confidence Interval")
+
+plt.ylabel("Positive Rate")
+plt.legend()
+
